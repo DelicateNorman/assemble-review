@@ -1,0 +1,20 @@
+# MASM/TASM 生成的文件
+*.obj
+*.exe
+*.com
+*.lst
+*.map
+
+# 编译器临时文件
+*.tmp
+*.bak
+*~
+
+# IDE 文件
+*.swp
+*.swo
+.vscode/
+.DS_Store
+
+# 日志文件
+*.log
