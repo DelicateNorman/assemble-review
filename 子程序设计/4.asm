@@ -49,9 +49,8 @@ HTOASC PROC NEAR
     PUSH DX
 
     ; 关键步骤：由于 ASCII 表在代码段 (CS)，需要设置 DS=CS 才能让 XLAT 访问
-    PUSH DS
-    PUSH CS       ; 将 CS 的值压栈
-    POP DS        ; 弹出 CS 的值给 DS (DS ← CS)
+    ;PUSH CS       ; 将 CS 的值压栈
+    ;POP DS        ; 弹出 CS 的值给 DS (DS ← CS)
     
     MOV BX, OFFSET ASCII ; BX ← ASCII 码表的偏移地址
     
@@ -65,8 +64,8 @@ HTOASC PROC NEAR
     INT 21H       ; 执行 DOS 功能调用
     
     ; 由于这是子程序，为保证主程序能正确访问数据段，理论上需恢复 DS，
-    POP DS
-    
+    ; 但在本简化示例中，由于没有用到 .DATA 段，可不恢复。
+
     POP DX        ; 恢复 DX
     POP BX        ; 恢复 BX
     POP AX        ; 恢复 AX
