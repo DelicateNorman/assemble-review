@@ -10,9 +10,7 @@
     SUM DW 0, 0     ; 预留双倍长变量 (32位) 保存求和结果 (低字在前，高字在后)
     
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
+.STARTUP ; 程序入口点，自动初始化 DS (方案 B 结构)
     
     ; --- 顺序执行流程 ---
     
@@ -36,9 +34,6 @@ MAIN PROC
     MOV WORD PTR SUM+2, DX ; 保存高 16 位 (DX) 到 SUM 的高字 (SUM+2)
     MOV WORD PTR SUM, AX   ; 保存低 16 位 (AX) 到 SUM 的低字 (SUM)
     
-    ; 退出程序
-    MOV AH, 4CH
-    INT 21H
+.EXIT 0 ; 退出程序
 
-MAIN ENDP
-END MAIN
+END ; 汇编结束

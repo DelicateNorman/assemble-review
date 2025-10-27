@@ -11,17 +11,18 @@
     RESULT DW ?                 ; 存储最终的空格计数 (使用 DW 保证和 BX 匹配)
     
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
-    MOV ES, AX                  ; 设置 ES = DS，以支持 ES:[SI] 寻址
+.STARTUP ; 程序入口点，自动完成 MOV AX, @DATA 和 MOV DS, AX (方案 B 结构)
 
     ; --- 循环初始部分 ---
+    ; 在 .STARTUP 结构中，ES 默认也指向数据段，但为明确使用 ES:[SI] 寻址，显式设置 ES=DS
+    MOV AX,DS
+    MOV ES, AX                ; 设置 ES = DS，以支持 ES:[SI] 寻址
+    
     MOV CX, COUNT               ; 设置循环次数 CX ← 字符串长度 COUNT
     MOV SI, OFFSET STRING       ; SI ← 字符串起始地址
     XOR BX, BX                  ; BX ← 0，用 BX 记录空格数 (出口参数)
 
-    ; MOV AL, 20H                 ; AL ← 20H (空格的 ASCII 码)
+    ; MOV AL, 20H ; AL ← 20H (空格的 ASCII 码)
 
     ; 1. 循环控制：先判断
     ; JCXZ (Jump if CX is Zero): 如果 CX=0，跳过循环
@@ -52,9 +53,6 @@ DONE:
     ; --- 循环结束后的操作 ---
     MOV RESULT, BX              ; 保存结果 BX (空格数)
 
-    ; 退出程序，当然也可以写.exit 0
-    MOV AH, 4CH
-    INT 21H
+.EXIT 0 ; 退出程序，自动生成 MOV AH, 4CH / INT 21H
 
-MAIN ENDP
-END MAIN
+END ; 汇编结束

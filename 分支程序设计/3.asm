@@ -5,9 +5,7 @@
 .STACK 100H
 
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
+.startup
     
     ; 假设 BX 中有一个初始值
     MOV BX, 8000H  ; 示例：最高位为 1
@@ -34,9 +32,5 @@ two:
     MOV AH, 2       ; DOS 功能 2H：显示 DL 中的字符
     INT 21H         ; 执行显示操作
     
-    ; 退出程序也可以写.exit 0
-    MOV AH, 4CH
-    INT 21H
-
-MAIN ENDP
-END MAIN
+    .exit 0
+END

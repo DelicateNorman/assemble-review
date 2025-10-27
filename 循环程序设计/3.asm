@@ -8,16 +8,14 @@
 .DATA
     ; 待排序数组 (N=5)
     ARRAY   DB 92, 55, 30, 78, 41
-    LENGTH  EQU ($-ARRAY) ; 数组长度 N = 5
+    CCCOUNT EQU 5 ; 数组长度 N = 5  <--- 修正：使用 CCCOUNT 代替 CCCOUNTOF
     
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
+.STARTUP ; 程序入口点，自动初始化 DS (方案 B 结构)
     
     ; --- 外循环初始化 ---
-    ; 外循环次数: LENGTH - 1 = 4 次 (共 N 个元素，只需 N-1 趟)
-    MOV CX, LENGTH          ; CX = 5
+    ; 外循环次数: CCCOUNT - 1 = 4 次 (共 N 个元素，只需 N-1 趟)
+    MOV CX, CCCOUNT          ; CX ← 5  <--- 修正：直接使用 CCCOUNT 符号
     DEC CX                  ; CX = 4 (外循环次数)
     
 OuterLoop:
@@ -55,9 +53,6 @@ NextCompare:
     
     ; 排序完成，结果在 ARRAY 中。
 
-    ; 退出程序
-    MOV AH, 4CH
-    INT 21H
+.EXIT 0 ; 退出程序
 
-MAIN ENDP
-END MAIN
+END ; 汇编结束

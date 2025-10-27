@@ -10,31 +10,25 @@
                ; 1到100的和为 5050 (小于 65535, 一个字足够存储)。
     
 .CODE
-MAIN PROC
-    ; 初始化数据段寄存器 DS
-    MOV AX, @DATA   
-    MOV DS, AX
+.STARTUP ; 程序入口点，自动初始化 DS (方案 B 结构)
     
     ; --- 循环初始部分 ---
     XOR AX, AX      ; 初始化累加和 AX = 0。AX 将作为累加器。
     MOV CX, 100     ; 设置循环次数 CX = 100。
     
-again:
+AGAIN:
     ; --- 循环体部分 ---
     ADD AX, CX      ; 累加：执行 AX = AX + CX。
                     ; CX 的值从 100 递减到 1，实现 100 + 99 + ... + 1 的累加。
     
     ; --- 循环控制部分 ---
-    LOOP again      ; 1. CX = CX - 1
-                    ; 2. 如果 CX != 0，则跳转到标签 'again'
+    LOOP AGAIN      ; 1. CX = CX - 1
+                    ; 2. 如果 CX != 0，则跳转到标签 'AGAIN'
                     ; 3. 如果 CX = 0，则执行下一条指令
     
     ; --- 循环结束后的操作 ---
     MOV SUM, AX     ; 将最终的求和结果 (AX) 存储到变量 SUM 中。
     
-    ; 退出程序 其实也可以写exit 0 
-    MOV AH, 4CH     
-    INT 21H
+.EXIT 0 ; 退出程序，自动生成 MOV AH, 4CH / INT 21H
 
-MAIN ENDP
-END
+END ; 汇编结束

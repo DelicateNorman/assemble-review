@@ -7,22 +7,20 @@
 .DATA
     ; 待处理的字符串，以 '0' 作为结束标志
     STRING DB 'Hello WORLD! This Is A Test0'
+    
     ; 显示消息
-    MSG_BEFORE DB 'String before processing: $'
-    MSG_AFTER DB 13, 10, 'String after processing: $'
-    STRING_DISPLAY DB 'Hello WORLD! This Is A Test$', 13, 10, '$'  ; 用于显示的原始字符串副本 
+    MSG_BEFORE       DB 'String before processing: Hello WORLD! This Is A Test', 13, 10, '$'
+    MSG_AFTER_TITLE  DB 13, 10, 'String after processing: ', '$'
+    
+    ; 注：原 STRING_DISPLAY 变量已移除，直接在 MSG_BEFORE 中显示原始内容。
     
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
+.STARTUP ; 程序入口点，自动初始化 DS (方案 B 结构)
+
+    ; --- 主程序逻辑 ---
 
     ; 显示处理前的字符串
     LEA DX, MSG_BEFORE
-    MOV AH, 09H
-    INT 21H
-
-    LEA DX, STRING_DISPLAY
     MOV AH, 09H
     INT 21H
 
@@ -66,20 +64,18 @@ find_end:
     INC SI
     JMP find_end
 replace_end:
-    MOV BYTE PTR [SI], '$'
+    MOV BYTE PTR [SI], '$' ; 将 '0' 替换为 DOS 字符串结束符 '$'
 
-    ; 显示处理后的字符串
-    LEA DX, MSG_AFTER
+    ; 显示处理后的字符串标题
+    LEA DX, MSG_AFTER_TITLE
     MOV AH, 09H
     INT 21H
 
+    ; 显示处理后的字符串内容
     LEA DX, STRING
     MOV AH, 09H
     INT 21H
 
-    ; 退出程序
-    MOV AH, 4CH
-    INT 21H
+.EXIT 0 ; 退出程序
 
-MAIN ENDP
-END MAIN
+END ; 汇编结束

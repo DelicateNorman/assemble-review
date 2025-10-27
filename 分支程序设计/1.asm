@@ -8,9 +8,7 @@
     RESULT DW ? ; 存储最终的绝对值结果
     
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
+.startup
     
     ; 假设 AX 中有一个初始值
     MOV AX, -1234H ; 示例：初始 AX = 负数 (例如 -4660)
@@ -30,9 +28,5 @@ nonneg:
     ; --- 分支结束后的公共汇合点 ---
     MOV RESULT, AX  ; 条件满足或求补后，将最终结果存入 RESULT
 
-    ; 退出程序  也可以写.exit 0
-    MOV AH, 4CH
-    INT 21H
-
-MAIN ENDP
-END MAIN
+    .exit 0
+END

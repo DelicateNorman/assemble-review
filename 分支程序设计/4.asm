@@ -24,10 +24,7 @@
     
 .CODE
 ; 程序入口点
-MAIN PROC
-    ; 初始化数据段寄存器 DS
-    MOV AX, @DATA   ; 获取数据段的地址
-    MOV DS, AX      ; 将地址加载到 DS
+.startup
     
 start1: 
     ; 1. 提示用户输入数字
@@ -102,9 +99,6 @@ start2:
     MOV AH, 09H            ; DOS功能：显示字符串
     INT 21H
     
-    ; 退出程序也可以写.exit 0
-    MOV AH, 4CH            ; DOS功能：终止程序并返回DOS
-    INT 21H
+    .exit 0
 
-MAIN ENDP
-END MAIN
+END
