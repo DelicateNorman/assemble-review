@@ -1,0 +1,11 @@
+;lt512a.mac
+dispchar macro char
+	mov dl,char
+	mov ah,2
+	int 21h
+	endm
+dispmsg  macro message
+	mov dx,offset message
+	mov ah,9
+	int 21h
+	endm

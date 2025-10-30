@@ -8,10 +8,16 @@
 .DATA
     SUM DW ?   ; 预留字变量 (2字节) 来保存求和结果。
                ; 1到100的和为 5050 (小于 65535, 一个字足够存储)。
-    
+    COUNT dw 2,3,4,5,6
 .CODE
 .STARTUP ; 程序入口点，自动初始化 DS (方案 B 结构)
-    
+    MOV ax,count[2]
+    mov si,2
+    mov ax,count
+    mov ax,[count+2]
+    mov ax,[count+si]
+    mov si,offset count
+    mov ax,[si+2]
     ; --- 循环初始部分 ---
     XOR AX, AX      ; 初始化累加和 AX = 0。AX 将作为累加器。
     MOV CX, 100     ; 设置循环次数 CX = 100。

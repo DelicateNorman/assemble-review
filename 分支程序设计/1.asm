@@ -8,8 +8,7 @@
     RESULT DW ? ; 存储最终的绝对值结果
     
 .CODE
-.startup
-    
+.startup 
     ; 假设 AX 中有一个初始值
     MOV AX, -1234H ; 示例：初始 AX = 负数 (例如 -4660)
     ; MOV AX, 5678H ; 示例：初始 AX = 正数 (例如 5678)
