@@ -36,11 +36,7 @@
     bufY DB 78h        ; 第二个8位无符号数
     bufZ DB ?          ; 存储较大值
 .CODE
-MAIN PROC
-    ; 初始化数据段
-    MOV AX, @DATA
-    MOV DS, AX
-
+.startup
     ; 比较两个数的大小
     MOV AL, bufX       ; AL ← bufX
     CMP AL, bufY       ; 比较AL与bufY
@@ -56,11 +52,8 @@ storeX:
     MOV bufZ, AL
 
 done:
-    ; 程序结束，返回DOS
-    MOV AH, 4CH
-    INT 21H
-MAIN ENDP
-END MAIN
+.exit 0
+END
 ```
 
 ### 代码说明
@@ -110,10 +103,7 @@ END MAIN
     msgNeg DB 'Negative numbers: $'
     crlf DB 0DH, 0AH, '$'
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
-
+.startup
     ; 初始化指针
     LEA SI, arrayM      ; SI指向原始数组
     LEA DI, arrayP      ; DI指向正数数组
@@ -161,11 +151,7 @@ next_element:
     MOV AL, countN
     CALL display_digit
 
-    ; 程序结束
-    MOV AH, 4CH
-    INT 21H
-
-MAIN ENDP
+.exit 0
 
 ; 显示数字子程序（AL中的数字，0-99）
 display_digit PROC
@@ -195,7 +181,7 @@ display_digit PROC
     RET
 display_digit ENDP
 
-END MAIN
+END
 ```
 
 ### 代码说明
@@ -235,10 +221,7 @@ END MAIN
     msgFound DB 'String "DEBUG" found!', 0DH, 0AH, '$'
     msgNotFound DB 'String "DEBUG" not found!', 0DH, 0AH, '$'
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
-
+.startup
     ; 设置搜索段地址为0070H
     MOV AX, 0070H
     MOV ES, AX          ; ES = 0070H
@@ -299,10 +282,8 @@ not_found:
     INT 21H
 
 done:
-    MOV AH, 4CH
-    INT 21H
-MAIN ENDP
-END MAIN
+.exit 0
+END
 ```
 
 ### 代码说明
@@ -342,10 +323,7 @@ END MAIN
     msgAfter  DB 'Converted string: $'
     crlf     DB 0DH, 0AH, '$'
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
-
+.startup
     ; 显示原始字符串
     LEA DX, msgBefore
     MOV AH, 9
@@ -373,9 +351,7 @@ MAIN PROC
     MOV AH, 9
     INT 21H
 
-    MOV AH, 4CH
-    INT 21H
-MAIN ENDP
+.exit 0
 
 ; 大小写转换子程序
 ; 入口参数：AL = 转换模式 (0=大写转小写, 1=小写转大写, 2=大小写互换)
@@ -446,7 +422,7 @@ convert_done:
     RET
 convert_case ENDP
 
-END MAIN
+END
 ```
 
 ### 代码说明
@@ -486,10 +462,7 @@ END MAIN
     msgReg DB 'Register parameter: $'
     crlf   DB 0DH, 0AH, '$'
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
-
+.startup
     ; 显示提示信息
     LEA DX, msgReg
     MOV AH, 9
@@ -504,9 +477,7 @@ MAIN PROC
     MOV AH, 9
     INT 21H
 
-    MOV AH, 4CH
-    INT 21H
-MAIN ENDP
+.exit 0
 
 ; 使用寄存器传递参数的十六进制显示子程序
 ; 入口参数：AX = 要显示的16位数
@@ -558,7 +529,7 @@ is_digit:
     RET
 hex_to_ascii ENDP
 
-END MAIN
+END
 ```
 
 #### 方法2：堆栈传递参数
@@ -615,11 +586,23 @@ display_hex_stack ENDP
 
 #### 方法3：变量传递参数
 ```asm
+.MODEL SMALL
+.STACK 100H
 .DATA
     wordTemp DW 1234H   ; 要显示的数
     msgVar  DB 'Variable parameter: $'
 
 .CODE
+.startup
+    ; 显示提示信息
+    LEA DX, msgVar
+    MOV AH, 9
+    INT 21H
+
+    CALL display_hex_var
+
+.exit 0
+
 ; 变量传递参数的十六进制显示子程序
 ; 入口参数：wordTemp变量
 display_hex_var PROC
@@ -660,12 +643,19 @@ disp_loop_var:
     RET
 display_hex_var ENDP
 
-; 调用示例
-    LEA DX, msgVar
-    MOV AH, 9
-    INT 21H
+; 十六进制位转ASCII子程序
+; 入口参数：DL = 4位十六进制数(0-15)
+; 出口参数：DL = ASCII字符
+hex_to_ascii PROC
+    CMP DL, 9
+    JLE is_digit
+    ADD DL, 7           ; A-F需要加7
+is_digit:
+    ADD DL, '0'         ; 转换为ASCII
+    RET
+hex_to_ascii ENDP
 
-    CALL display_hex_var
+END
 ```
 
 ### 代码说明
@@ -721,10 +711,7 @@ display_hex_var ENDP
     msgE DB '0-59:   $'
     crlf DB 0DH, 0AH, '$'
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
-
+.startup
     ; 调用统计子程序
     LEA SI, scores
     MOV CL, count
@@ -771,9 +758,7 @@ MAIN PROC
     LEA DX, crlf
     INT 21H
 
-    MOV AH, 4CH
-    INT 21H
-MAIN ENDP
+.exit 0
 
 ; 成绩统计子程序
 ; 入口参数：SI = 成绩数组地址, CL = 学生人数
@@ -845,7 +830,7 @@ display_digit PROC
     RET
 display_digit ENDP
 
-END MAIN
+END
 ```
 
 ### 代码说明
@@ -886,10 +871,7 @@ END MAIN
     msgRes  DB ', X^N = $'
     crlf    DB 0DH, 0AH, '$'
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
-
+.startup
     ; 显示输入参数
     LEA DX, msgX
     MOV AH, 9
@@ -923,9 +905,7 @@ MAIN PROC
     MOV AH, 9
     INT 21H
 
-    MOV AH, 4CH
-    INT 21H
-MAIN ENDP
+.exit 0
 
 ; 递归计算指数函数子程序
 ; 入口参数：AX = X (底数), BX = N (指数)
@@ -999,7 +979,7 @@ display_loop:
     RET
 display_number ENDP
 
-END MAIN
+END
 ```
 
 ### 代码说明
