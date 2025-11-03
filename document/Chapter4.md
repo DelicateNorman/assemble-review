@@ -15,24 +15,27 @@
 分析：一个字节二进制8位、对应十六进制2位，每个十六进制位需要转换为 ASCII 显示。本例没有采用例2.46的转换方法，而是通过查表实现 ASCII 码转换，然后逐位显形成顺序程序结构。
 
 ```asm
-;数据段  
-hex db 4bh ; 待显示的字节数据  
-ascii db 30h,31h,32h,33h,34h,35h,36h,37h,38h,39h  
-db 41h,42h,43h,44h,45h,46h ; ASCII 表  
-;代码段  
-mov bx, offsetascii ; BX指向ASCII表  
-mov al, hex ; AL取得字节数据  
-mov cl, 4 ; 先显示二进制高4位（对应十六进制一位  
-sar al, cl ; 高4位移位到低4位，即ASCII表中的位号  
-xlat ; 换码：AL←DS: [BX+AL]  
-mov dl, al ; 入口参数：DL←AL  
-mov ah, 2 ; 02号DOS功能调用  
-int 21h ; 显示数据高位  
-mov al, hex ; al取得字节数据  
-and al, 0fh ; 高4位清0，只有低A位有效  
-xlat ; 换码  
-mov dl, al  
-mov ah, 2
+;数据段
+hex db 4bh                ; 待显示的字节数据
+ascii db 30h,31h,32h,33h,34h,35h,36h,37h,38h,39h
+       db 41h,42h,43h,44h,45h,46h    ; ASCII表：0-9,A-F
+
+;代码段
+mov bx, offset ascii     ; BX指向ASCII表
+mov al, hex              ; AL取得字节数据
+mov cl, 4                ; 先显示二进制高4位（对应十六进制一位）
+sar al, cl               ; 高4位移位到低4位，即ASCII表中的位号
+xlat                     ; 换码：AL←DS:[BX+AL]
+mov dl, al               ; 入口参数：DL←AL
+mov ah, 2                ; 02号DOS功能调用
+int 21h                  ; 显示数据高位
+
+mov al, hex              ; AL重新取得字节数据
+and al, 0fh              ; 高4位清0，只有低4位有效
+xlat                     ; 换码
+mov dl, al               ; DL←AL
+mov ah, 2                ; 02号DOS功能调用
+int 21h                  ; 显示数据低位
 ```
 
 # 【例4.2】 自然数求和程序
