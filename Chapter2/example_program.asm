@@ -6,8 +6,6 @@
 .STACK 100H
 
 .DATA
-
-
 .CODE
 .STARTUP   ; 程序入口点
 mydata SEGMENT   
